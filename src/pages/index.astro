@@ -1,15 +1,17 @@
 ---
-import Navbar from "../components/Navbar.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import Brand from "../components/Brand.astro";
+import PostCard from "../components/PostCard.astro";
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("posts");
+const featuredPosts = allPosts.filter(post => post.data.featured);
+const recentPosts = allPosts.sort((a, b) => b.data.date - a.data.date).slice(0, 3);
 ---
 
-<header>
-	
+<BaseLayout title="Home">
 	<Brand />
 
-	<Navbar />
-</header>
-<main class="container">
 	<section class="featured-posts">
 		<h2>Featured Posts</h2>
 		<!--Probably call a component to act as a featured post; container is grid for even spaces-->
@@ -40,10 +42,10 @@ import Brand from "../components/Brand.astro";
 		<div class="author-card">
 			<div class="author-image">
 				<img src="#" alt="#"/>		
-				<h3>Author's name</h3>
 			</div>
 
 			<div class="author-card-content">
+				<h3>Author's name</h3>
 				<p>Welcome & Introduction</p>
 			</div>
 		</div>
@@ -70,11 +72,7 @@ import Brand from "../components/Brand.astro";
 			</div>
 		</div>
 	</section>
-</main>
-<footer>
-    <p>&copy; 2026 Coffee Break</p>
-</footer>
-
+	
 <!--
 	Header is a container, use display : flex for formatting
 	to allow it to control child (brand-banner, nav).
@@ -89,3 +87,4 @@ import Brand from "../components/Brand.astro";
 	featured-posts = use grid also, makes spacing more even.
 	theme-tags = display flex so if it overflows it is more responsive.
 -->
+</BaseLayout>

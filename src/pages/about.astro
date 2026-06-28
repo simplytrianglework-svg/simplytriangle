@@ -1,12 +1,9 @@
 ---
-import Navbar from "../components/Navbar.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Brand from "../components/Brand.astro";
 ---
 
-<header>
-	<Navbar />
-</header>
-
-<main class="container">
+<BaseLayout title="About">
     <div class="author-profile-card">
         <div class="author-profile-image">
             <img src="#" alt="#"/>
@@ -16,13 +13,6 @@ import Navbar from "../components/Navbar.astro";
             <div class="author-introduction">
                 <h2>Author Name</h2>
                 <p>Author description</p>
-            </div>
-
-            <div class="author-skills">
-                <h3>Author's Skills</h3>
-                <ul class="author-skill-list">
-                    <li class="skill-item">placeholder</li>
-                </ul>
             </div>
 
             <div class="author-interests">
@@ -48,8 +38,10 @@ import Navbar from "../components/Navbar.astro";
                     </li>
                 </ul>
 
-                <a href="#">Interested to work with me? Click here</a>
+                <div class="work-cta">
+                    <a href="#">Interested to work with me? Click here</a>
+                </div>
             </div>
         </div>
     </div>
-</main>
+</BaseLayout>
