@@ -1,15 +1,15 @@
 ---
-// src/components/ThemeTag.astro
+// src/components/Category.astro
 interface Props {
     theme_name: string;
 }
 
-const {theme_name} = Astro.props;
+const {category_name} = Astro.props;
 ---
 
 
 <div class="theme-container">
     <div class="theme-pill">
-        {theme_name}
+        {category_name}
     </div>
 </div>

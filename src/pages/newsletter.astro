@@ -1,17 +1,10 @@
 ---
-import Navbar from "../components/Navbar.astro";
-import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Brand from "../components/Brand.astro";
 ---
 
-<header>
-    <Navbar />
-</header>
-
-<main class="container">
-    <section class="newsletter-banner">
-        <img src="#" alt="#"/>
-    </section>
-    
+<BaseLayout title="Newsletter">
+    <Brand />
     <section class="newsletter-primary-content">
         <h2>Our Daily Scope</h2>
         <p>Placeholder</p>
@@ -46,6 +39,4 @@ import Footer from "../components/Footer.astro";
 			</div>
 		</div>
     </section>
-</main>
-
-<Footer />
+</BaseLayout>

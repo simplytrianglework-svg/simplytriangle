@@ -2,11 +2,21 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Brand from "../components/Brand.astro";
 import PostCard from "../components/PostCard.astro";
+import ThemeTag from "../components/ThemeTag.astro";
 import { getCollection } from "astro:content";
+import Category from "../components/Category.astro";
 
+// 1. Get every post
 const allPosts = await getCollection("posts");
+
+// 2. From all posts, keep only the ones marked featured: true
 const featuredPosts = allPosts.filter(post => post.data.featured);
+
+// 3. Sort all posts newest first, then take only the first 3
 const recentPosts = allPosts.sort((a, b) => b.data.date - a.data.date).slice(0, 3);
+
+const categories = ["Story","Poetry","Analyses"]
+const themes =["Astronomy","Love","Nostalgia","Mythology"];
 ---
 
 <BaseLayout title="Home">
@@ -14,27 +24,28 @@ const recentPosts = allPosts.sort((a, b) => b.data.date - a.data.date).slice(0, 
 
 	<section class="featured-posts">
 		<h2>Featured Posts</h2>
-		<!--Probably call a component to act as a featured post; container is grid for even spaces-->
 		<div class="post-grid">
-			<div class="post-card">
-				<img src="#" alt="#"/>
-				<div class="card-content">
-					<h3>title placeholder</h3>
-					<p>description</p>
-					<p>
-						<a href="#">
-							read more
-						</a>
-					</p>
-				</div>
-			</div>
+			{featuredPosts.map(post => (
+				<PostCard
+					title={post.data.title}
+					description={post.data.description}
+					href={`/posts/${post.id}`}
+					image={post.data.image}
+				/>
+			))}
 		</div>
 	</section>
 
+
+	<section class="category-tags">
+		{categories.map(category =>(
+			<Category category_name={category}/>
+		))}
+	</section>
 	<section class="theme-tags">
-		<h2>Themes</h2>
-		<!--They should look like pills, probably another component 
-		if we want it to sync with changes.-->
+		{themes.map(theme =>(
+			<ThemeTag theme_name={theme}/>
+		))}
 	</section>
 
 	<section class="author-introduction">
@@ -53,38 +64,26 @@ const recentPosts = allPosts.sort((a, b) => b.data.date - a.data.date).slice(0, 
 		<!--Will add an arrow at the end so user will be guided that there is more; flex due to format, grid is also possible.-->
 	</section>
 
+	<!-- 4. For each recent post, render one 
+	PostCard with that post's data -->
+
 	<section class="recent-posts">
 		<h2>Recent Posts</h2>
-		<!--Same with featured posts, but will make this time related; grid-->
-		
 		<div class="post-grid">
-			<div class="post-card">
-				<img src="#" alt="#"/>
-				<div class="card-content">
-					<h3>title placeholder</h3>
-					<p>description</p>
-					<p>
-						<a href="#">
-							read more
-						</a>
-					</p>
-				</div>
-			</div>
+			{recentPosts.map(post => (
+				<PostCard
+					title={post.data.title}
+					description={post.data.description}
+					href={`/posts/${post.id}`}
+					image={post.data.image}
+				/>
+			))}
 		</div>
 	</section>
 	
-<!--
-	Header is a container, use display : flex for formatting
-	to allow it to control child (brand-banner, nav).
-	nav uses display: flex, while coloured-block won't need to. 
-	
-	Don't forget box-sizing: border-box; for better prediction
-	and responsiveness.
-
-	container class = use grid for proper formatting, easier
-	to modify than flex in the situation.
-
-	featured-posts = use grid also, makes spacing more even.
-	theme-tags = display flex so if it overflows it is more responsive.
+<!--Header: display flex, controls Brand + Nav children
+	container: grid for main layout
+	featured-posts: grid for even spacing
+	theme-tags: flex so pills wrap on overflow
 -->
 </BaseLayout>

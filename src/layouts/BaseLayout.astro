@@ -1,24 +1,111 @@
 ---
-// src/layouts/BaseLayout.astro
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+import { getCollection } from "astro:content";
 
 const { title } = Astro.props;
+
+const allPosts = await getCollection("posts");
+const categories = [...new Set(allPosts.map(post => post.data.category).filter(Boolean))];
 ---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title} | Coffee Break</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{title} | Coffee Break</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+
+    <link rel="stylesheet" href="/styles/global.css"/>
 </head>
 <body>
-  <header>
-    <Navbar />
-  </header>
-  <main class="container">
-    <slot />
-  </main>
-  <Footer />
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Coffee Break</span>
+            <button class="sidebar-close" id="sidebar-close">✕</button>
+        </div>
+        <nav class="sidebar-nav">
+            {categories.map(category => (
+                <>
+                    <div class="sidebar-category" data-category={category}>
+                        {category} <span class="indicator">◆</span>
+                    </div>
+                    <div class="sidebar-topics" id={`topics-${category}`}>
+                        {allPosts
+                            .filter(post => post.data.category === category)
+                            .map(post => (
+                                <a class="sidebar-topic" href={`/posts/${post.id}`}>
+                                    {post.data.title}
+                                </a>
+                            ))
+                        }
+                    </div>
+                </>
+            ))}
+        </nav>
+    </aside>
+
+    <!-- Overlay (darkens page when sidebar opens on mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Page wrapper -->
+    <div class="page-wrapper">
+        <header class="main-header">
+            <button class="hamburger" id="hamburger">☰</button>
+            <Navbar />
+        </header>
+
+        <main class="container">
+            <slot />
+        </main>
+
+        <Footer />
+    </div>
+
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebar-overlay");
+        const closeBtn = document.getElementById("sidebar-close");
+
+        // Open sidebar
+        hamburger.addEventListener("click", () => {
+            sidebar.classList.add("open");
+            overlay.classList.add("open");
+        });
+
+        // Close via X button
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("open");
+        });
+
+        // Close via overlay click
+        overlay.addEventListener("click", () => {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("open");
+        });
+
+        // Category dropdowns
+        const categories = document.querySelectorAll(".sidebar-category");
+
+        categories.forEach(category => {
+            category.addEventListener("click", () => {
+                const categoryId = category.getAttribute("data-category");
+                const topics = document.getElementById(`topics-${categoryId}`);
+
+                category.classList.toggle("active");
+                topics.classList.toggle("open");
+            });
+        });
+    </script>
+
 </body>
 </html>
