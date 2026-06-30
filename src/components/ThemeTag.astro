@@ -1,15 +1,17 @@
 ---
 // src/components/ThemeTag.astro
+// Kept as a thin wrapper for backward compatibility with existing
+// callers (e.g. index.astro uses theme_name={theme}).
+// New code should import Tag.astro directly — this and Category.astro
+// were previously two copies of the same markup.
+import Tag from "./Tag.astro";
+
 interface Props {
     theme_name: string;
+    href?: string;
 }
 
-const {theme_name} = Astro.props;
+const { theme_name, href } = Astro.props;
 ---
 
-
-<div class="theme-container">
-    <div class="theme-pill">
-        {theme_name}
-    </div>
-</div>
+<Tag label={theme_name} href={href} />

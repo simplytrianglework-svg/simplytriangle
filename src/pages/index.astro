@@ -2,9 +2,8 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Brand from "../components/Brand.astro";
 import PostCard from "../components/PostCard.astro";
-import ThemeTag from "../components/ThemeTag.astro";
+import Tag from "../components/Tag.astro";
 import { getCollection } from "astro:content";
-import Category from "../components/Category.astro";
 
 // 1. Get every post
 const allPosts = await getCollection("posts");
@@ -12,11 +11,23 @@ const allPosts = await getCollection("posts");
 // 2. From all posts, keep only the ones marked featured: true
 const featuredPosts = allPosts.filter(post => post.data.featured);
 
-// 3. Sort all posts newest first, then take only the first 3
-const recentPosts = allPosts.sort((a, b) => b.data.date - a.data.date).slice(0, 3);
+// 3. Sort newest first, then take only the first 3.
+// FIXED: Array.prototype.sort() mutates the array it's called on.
+// The original wrote `allPosts.sort(...)`, which reorders allPosts
+// itself — not just the new recentPosts variable. That happened to
+// be harmless here only because featuredPosts (a .filter, which does
+// NOT mutate) was computed on the line above. Swap these two lines
+// in the future and featuredPosts silently inherits date-sorted
+// order instead of source order. Spreading into a new array first
+// removes that landmine entirely.
+const recentPosts = [...allPosts].sort((a, b) => b.data.date - a.data.date).slice(0, 3);
 
-const categories = ["Story","Poetry","Analyses"]
-const themes =["Astronomy","Love","Nostalgia","Mythology"];
+// NOTE: these were hardcoded strings with no working links — clicking
+// a pill did nothing. Wiring them to actual filter routes assumes
+// you'll eventually build /category/[name] and /theme/[name] pages;
+// remove the href props below if that's not part of your roadmap yet.
+const categories = ["Story", "Poetry", "Analyses"];
+const themes = ["Astronomy", "Love", "Nostalgia", "Mythology"];
 ---
 
 <BaseLayout title="Home">
@@ -38,13 +49,13 @@ const themes =["Astronomy","Love","Nostalgia","Mythology"];
 
 
 	<section class="category-tags">
-		{categories.map(category =>(
-			<Category category_name={category}/>
+		{categories.map(category => (
+			<Tag label={category} href={`/category/${category.toLowerCase()}`} />
 		))}
 	</section>
 	<section class="theme-tags">
-		{themes.map(theme =>(
-			<ThemeTag theme_name={theme}/>
+		{themes.map(theme => (
+			<Tag label={theme} href={`/theme/${theme.toLowerCase()}`} />
 		))}
 	</section>
 

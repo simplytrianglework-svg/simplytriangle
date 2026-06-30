@@ -17,12 +17,12 @@ const hasAudio = !!post.data.audio;
 
 <BaseLayout title={post.data.title}>
 
-    <div class="progress-bar" id="progress-bar"></div>
+    <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"></div>
 
     <article class="post-content-card">
 
         {hasAudio && (
-            <button class="audio-toggle" id="audio-toggle" title="Listen to this post">
+            <button class="audio-toggle" id="audio-toggle" title="Listen to this post" aria-expanded="false" aria-controls="audio-panel">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
@@ -58,20 +58,35 @@ const hasAudio = !!post.data.audio;
 
 <script>
     const bar = document.getElementById("progress-bar");
-    window.addEventListener("scroll", () => {
+
+    // FIXED: docHeight is (scrollHeight - innerHeight), which is 0
+    // whenever the post's content is shorter than the viewport — a
+    // very real case for short poems. Dividing by 0 produces NaN,
+    // and setting style.width to "NaN%" is silently ignored by the
+    // browser rather than throwing, so the bug was invisible unless
+    // you specifically tested with a short post.
+    function updateProgress() {
+        if (!bar) return;
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = (scrollTop / docHeight) * 100;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
         bar.style.width = `${progress}%`;
-    });
+        bar.setAttribute("aria-valuenow", String(Math.round(progress)));
+    }
+
+    window.addEventListener("scroll", updateProgress);
+    // Run once on load too, otherwise the bar sits at its default
+    // width until the user's first scroll event fires.
+    updateProgress();
 
     const toggleBtn = document.getElementById("audio-toggle");
     const audioPanel = document.getElementById("audio-panel");
 
     if (toggleBtn && audioPanel) {
         toggleBtn.addEventListener("click", () => {
-            audioPanel.classList.toggle("open");
+            const isOpen = audioPanel.classList.toggle("open");
             toggleBtn.classList.toggle("active");
+            toggleBtn.setAttribute("aria-expanded", String(isOpen));
         });
     }
 </script>

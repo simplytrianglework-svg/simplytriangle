@@ -7,7 +7,11 @@ import { getCollection } from "astro:content";
 const { title, fullWidth = false } = Astro.props;
 
 const allPosts = await getCollection("posts");
-const categories = [...new Set(allPosts.map(post => post.data.category).filter(Boolean))];
+
+// Sorted so the sidebar order is stable and predictable rather than
+// depending on filesystem read order, which can vary across machines
+// and isn't guaranteed by the glob loader.
+const categories = [...new Set(allPosts.map(post => post.data.category).filter(Boolean))].sort();
 ---
 
 <!DOCTYPE html>
@@ -19,20 +23,29 @@ const categories = [...new Set(allPosts.map(post => post.data.category).filter(B
 
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+    <!-- Swapped Fraunces for Playfair Display. Fraunces is a fine
+         display serif but its letterforms are soft and a bit casual
+         at this weight/spacing — it read as "elegant blog" rather
+         than "regal/luxury cafe." Playfair Display has the dramatic
+         thick/thin stroke contrast associated with high-end menu and
+         packaging typography, which is the actual visual signature
+         being asked for. Pulling weights 400/500/600 plus italics
+         since headings range from the giant brand title down to
+         smaller section headers. -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" aria-label="Browse by category">
         <div class="sidebar-header">
             <span class="sidebar-title">Coffee Break</span>
-            <button class="sidebar-close" id="sidebar-close">✕</button>
+            <button class="sidebar-close" id="sidebar-close" aria-label="Close sidebar">✕</button>
         </div>
         <nav class="sidebar-nav">
             {categories.map(category => (
                 <>
-                    <div class="sidebar-category" data-category={category}>
+                    <div class="sidebar-category" data-category={category} role="button" tabindex="0" aria-expanded="false">
                         {category} <span class="indicator">◆</span>
                     </div>
                     <div class="sidebar-topics" id={`topics-${category}`}>
@@ -56,7 +69,7 @@ const categories = [...new Set(allPosts.map(post => post.data.category).filter(B
     <!-- Page wrapper -->
     <div class="page-wrapper">
         <header class="main-header">
-            <button class="hamburger" id="hamburger">☰</button>
+            <button class="hamburger" id="hamburger" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false">☰</button>
             <Navbar />
         </header>
 
@@ -68,33 +81,58 @@ const categories = [...new Set(allPosts.map(post => post.data.category).filter(B
     </div>
 
     <script>
+        // Guard every lookup. Previously a single missing element
+        // (e.g. after a future markup refactor) would throw on
+        // addEventListener and silently kill every script on the
+        // page below it, including the unrelated progress bar /
+        // audio toggle script on post pages.
         const hamburger = document.getElementById("hamburger");
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("sidebar-overlay");
         const closeBtn = document.getElementById("sidebar-close");
 
-        hamburger.addEventListener("click", () => {
-            sidebar.classList.add("open");
-            overlay.classList.add("open");
-        });
+        function openSidebar() {
+            sidebar?.classList.add("open");
+            overlay?.classList.add("open");
+            hamburger?.setAttribute("aria-expanded", "true");
+        }
 
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.remove("open");
-            overlay.classList.remove("open");
-        });
+        function closeSidebar() {
+            sidebar?.classList.remove("open");
+            overlay?.classList.remove("open");
+            hamburger?.setAttribute("aria-expanded", "false");
+        }
 
-        overlay.addEventListener("click", () => {
-            sidebar.classList.remove("open");
-            overlay.classList.remove("open");
+        hamburger?.addEventListener("click", openSidebar);
+        closeBtn?.addEventListener("click", closeSidebar);
+        overlay?.addEventListener("click", closeSidebar);
+
+        // Close on Escape, a common accessibility expectation for
+        // any off-canvas panel that acts like a modal.
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && sidebar?.classList.contains("open")) {
+                closeSidebar();
+            }
         });
 
         const categories = document.querySelectorAll(".sidebar-category");
         categories.forEach(category => {
-            category.addEventListener("click", () => {
+            const toggle = () => {
                 const categoryId = category.getAttribute("data-category");
                 const topics = document.getElementById(`topics-${categoryId}`);
-                category.classList.toggle("active");
-                topics.classList.toggle("open");
+                const isOpen = category.classList.toggle("active");
+                topics?.classList.toggle("open");
+                category.setAttribute("aria-expanded", String(isOpen));
+            };
+            category.addEventListener("click", toggle);
+            // The category divs use role="button" for accessibility,
+            // but a div has no native keyboard activation like a real
+            // <button> does, so Enter/Space have to be wired manually.
+            category.addEventListener("keydown", (e) => {
+                if (e instanceof KeyboardEvent && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    toggle();
+                }
             });
         });
     </script>

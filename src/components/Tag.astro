@@ -1,0 +1,20 @@
+---
+// src/components/Tag.astro
+// Replaces the old Category.astro and ThemeTag.astro, which were
+// byte-for-byte identical except for the prop name. One component,
+// one place to update styles, no risk of the two drifting apart.
+
+interface Props {
+    label: string;
+    href?: string;
+}
+
+const { label, href } = Astro.props;
+const Element = href ? "a" : "div";
+---
+
+<div class="theme-container">
+    <Element class="theme-pill" {...href ? { href } : {}}>
+        {label}
+    </Element>
+</div>

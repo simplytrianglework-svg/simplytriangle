@@ -1,9 +1,17 @@
 ---
+// src/components/PostCard.astro
+interface Props {
+    title: string;
+    description: string;
+    href: string;
+    image: string;
+}
+
 const { title, description, href, image } = Astro.props;
 ---
 
 <div class="post-card">
-    <img src={image} alt={title} />
+    <img src={image} alt={title} loading="lazy" decoding="async" />
     <div class="card-content">
         <h3>{title}</h3>
         <p>{description}</p>

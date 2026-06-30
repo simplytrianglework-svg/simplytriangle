@@ -1,3 +1,13 @@
+---
+// src/components/Navbar.astro
+// Added: detect the current page so the active link can carry
+// aria-current="page". Previously there was no way for a keyboard
+// or screen-reader user (or even a sighted user, since there was no
+// active-state class either) to tell which page they were on.
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+    href === "/" ? currentPath === "/" : currentPath.startsWith(href);
+---
 <nav class="main-nav">
 	<ul class="nav-links">
 		<li class="nav-brand">
@@ -6,22 +16,22 @@
 			</a>
 		</li>
 		<li class="nav-item">
-			<a href="/">
+			<a href="/" aria-current={isActive("/") ? "page" : undefined}>
 				Home
 			</a>
 		</li>
 		<li class="nav-item">
-			<a href="/about">
+			<a href="/about" aria-current={isActive("/about") ? "page" : undefined}>
 				About
 			</a>
 		</li>
 		<li class="nav-item">
-			<a href="/newsletter">
+			<a href="/newsletter" aria-current={isActive("/newsletter") ? "page" : undefined}>
 				Newsletter
 			</a>
 		</li>
 		<li class="nav-item">
-			<a href="/work-with-me">
+			<a href="/work-with-me" aria-current={isActive("/work-with-me") ? "page" : undefined}>
 				Work with Me
 			</a>
 		</li>

@@ -8,7 +8,11 @@ import Brand from "../components/Brand.astro";
     <div class="about-card">
         <div class="author-profile-card">
             <div class="author-profile-image">
-                <img src="#" alt="#"/>
+                <!-- FIXED: alt="#" is read aloud by screen readers as
+                     "hash" or skipped unpredictably. Once you have a
+                     real photo, give it a real alt like "Rye, author
+                     of Coffee Break". -->
+                <img src="#" alt="Author portrait, to be added"/>
             </div>
 
             <div class="profile-card-content">

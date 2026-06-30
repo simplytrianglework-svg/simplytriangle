@@ -5,7 +5,8 @@ import PostCard from "../components/PostCard.astro";
 import { getCollection } from "astro:content";
 
 const allPosts = await getCollection("posts");
-const recentPosts = allPosts.sort((a, b) => b.data.date - a.data.date).slice(0, 3);
+// Non-mutating sort, same reasoning as index.astro.
+const recentPosts = [...allPosts].sort((a, b) => b.data.date - a.data.date).slice(0, 3);
 ---
 
 <BaseLayout title="Newsletter">
@@ -19,6 +20,26 @@ const recentPosts = allPosts.sort((a, b) => b.data.date - a.data.date).slice(0, 
                 <img src="#" alt="newsletter illustration"/>
             </div>
             <p>placeholder</p>
+
+            <!--
+                A page literally named "Newsletter" had no subscribe
+                form — just text and a recent-posts grid. This is a
+                bare functional skeleton, not styled or wired to a
+                real endpoint. Since your content strategy already
+                banks posts on Beehiiv, swap the form action below for
+                your actual Beehiiv embed/API endpoint when ready.
+            -->
+            <form class="newsletter-signup" action="#" method="post">
+                <label for="newsletter-email" class="sr-only">Email address</label>
+                <input
+                    type="email"
+                    id="newsletter-email"
+                    name="email"
+                    placeholder="you@example.com"
+                    required
+                />
+                <button type="submit">Subscribe</button>
+            </form>
         </section>
 
         <section class="newsletter-promotions">
