@@ -22,12 +22,13 @@ const featuredPosts = allPosts.filter(post => post.data.featured);
 // removes that landmine entirely.
 const recentPosts = [...allPosts].sort((a, b) => b.data.date - a.data.date).slice(0, 3);
 
-// NOTE: these were hardcoded strings with no working links — clicking
-// a pill did nothing. Wiring them to actual filter routes assumes
-// you'll eventually build /category/[name] and /theme/[name] pages;
-// remove the href props below if that's not part of your roadmap yet.
-const categories = ["Story", "Poetry", "Analyses"];
-const themes = ["Astronomy", "Love", "Nostalgia", "Mythology"];
+// Previously these were hardcoded strings with no working links —
+// clicking a pill did nothing, and even once linked, a hardcoded list
+// could point at a category/theme with zero matching posts. Pulling
+// from the real post data guarantees every pill here goes somewhere
+// with actual results, filtered on the new /bookshelf page.
+const categories = [...new Set(allPosts.map(post => post.data.category).filter(Boolean))].sort();
+const themes = [...new Set(allPosts.flatMap(post => post.data.tags ?? []))].sort();
 ---
 
 <BaseLayout title="Home">
@@ -51,12 +52,12 @@ const themes = ["Astronomy", "Love", "Nostalgia", "Mythology"];
 
 	<section class="category-tags">
 		{categories.map(category => (
-			<Tag label={category} href={`/category/${category.toLowerCase()}`} />
+			<Tag label={category} href={`/bookshelf?category=${encodeURIComponent(category.toLowerCase())}`} />
 		))}
 	</section>
 	<section class="theme-tags">
 		{themes.map(theme => (
-			<Tag label={theme} href={`/theme/${theme.toLowerCase()}`} />
+			<Tag label={theme} href={`/bookshelf?tag=${encodeURIComponent(theme.toLowerCase())}`} />
 		))}
 	</section>
 

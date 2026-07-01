@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Tag from "../../components/Tag.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -61,6 +62,17 @@ const hasAudio = !!post.data.audio;
             <Content />
         </div>
 
+        {(post.data.category || (post.data.tags && post.data.tags.length > 0)) && (
+            <div class="post-tags">
+                {post.data.category && (
+                    <Tag label={post.data.category} href={`/bookshelf?category=${encodeURIComponent(post.data.category.toLowerCase())}`} />
+                )}
+                {post.data.tags?.map(tag => (
+                    <Tag label={tag} href={`/bookshelf?tag=${encodeURIComponent(tag.toLowerCase())}`} />
+                ))}
+            </div>
+        )}
+
     </article>
 
     <!-- Reader just finished the piece — this is the single highest-
@@ -73,22 +85,23 @@ const hasAudio = !!post.data.audio;
         <a href="/newsletter" class="post-subscribe-link">Subscribe to the Newsletter</a>
     </section>
 
-    <nav class="post-nav" aria-label="Post navigation">
-        {prevPost ? (
-            <a href={`/posts/${prevPost.id}`} class="post-nav-link post-nav-prev">
-                <span class="post-nav-label">← Older</span>
-                <span class="post-nav-title">{prevPost.data.title}</span>
-            </a>
-        ) : <span class="post-nav-link post-nav-empty" />}
+    {(prevPost || nextPost) && (
+        <nav class="post-nav" aria-label="Post navigation">
+            {prevPost ? (
+                <a href={`/posts/${prevPost.id}`} class="post-nav-link post-nav-prev">
+                    <span class="post-nav-label">← Older</span>
+                    <span class="post-nav-title">{prevPost.data.title}</span>
+                </a>
+            ) : <span class="post-nav-link post-nav-empty" />}
 
-        {nextPost ? (
-            <a href={`/posts/${nextPost.id}`} class="post-nav-link post-nav-next">
-                <span class="post-nav-label">Newer →</span>
-                <span class="post-nav-title">{nextPost.data.title}</span>
-            </a>
-        ) : <span class="post-nav-link post-nav-empty" />}
-    </nav>
-
+            {nextPost ? (
+                <a href={`/posts/${nextPost.id}`} class="post-nav-link post-nav-next">
+                    <span class="post-nav-label">Newer →</span>
+                    <span class="post-nav-title">{nextPost.data.title}</span>
+                </a>
+            ) : <span class="post-nav-link post-nav-empty" />}
+        </nav>
+    )}
 </BaseLayout>
 
 <script>

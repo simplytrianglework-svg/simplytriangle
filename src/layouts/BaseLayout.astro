@@ -11,7 +11,11 @@ const allPosts = await getCollection("posts");
 // Sorted so the sidebar order is stable and predictable rather than
 // depending on filesystem read order, which can vary across machines
 // and isn't guaranteed by the glob loader.
+// Both lists are pulled straight from post frontmatter, so dropping a
+// new .md file with a new category or tag in it is all it takes for
+// the sidebar to pick it up on the next build — nothing to hand-edit.
 const categories = [...new Set(allPosts.map(post => post.data.category).filter(Boolean))].sort();
+const themes = [...new Set(allPosts.flatMap(post => post.data.tags ?? []))].sort();
 ---
 
 <!DOCTYPE html>
@@ -38,29 +42,45 @@ const categories = [...new Set(allPosts.map(post => post.data.category).filter(B
 <body>
 
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar" aria-label="Browse by category">
+    <aside class="sidebar" id="sidebar" aria-label="Browse the bookshelf">
         <div class="sidebar-header">
             <span class="sidebar-title">Coffee Break</span>
             <button class="sidebar-close" id="sidebar-close" aria-label="Close sidebar">✕</button>
         </div>
         <nav class="sidebar-nav">
-            {categories.map(category => (
-                <>
-                    <div class="sidebar-category" data-category={category} role="button" tabindex="0" aria-expanded="false">
-                        {category} <span class="indicator">◆</span>
-                    </div>
-                    <div class="sidebar-topics" id={`topics-${category}`}>
-                        {allPosts
-                            .filter(post => post.data.category === category)
-                            .map(post => (
-                                <a class="sidebar-topic" href={`/posts/${post.id}`}>
-                                    {post.data.title}
-                                </a>
-                            ))
-                        }
-                    </div>
-                </>
-            ))}
+            {categories.length > 0 && (
+                <div class="sidebar-section">
+                    <span class="sidebar-section-label">Category</span>
+                    {categories.map(category => (
+                        <a
+                            class="sidebar-link"
+                            href={`/bookshelf?category=${encodeURIComponent(category.toLowerCase())}`}
+                            data-filter-type="category"
+                            data-filter-value={category.toLowerCase()}
+                        >
+                            {category}
+                        </a>
+                    ))}
+                </div>
+            )}
+
+            {themes.length > 0 && (
+                <div class="sidebar-section">
+                    <span class="sidebar-section-label">Themes</span>
+                    {themes.map(theme => (
+                        <a
+                            class="sidebar-link"
+                            href={`/bookshelf?tag=${encodeURIComponent(theme.toLowerCase())}`}
+                            data-filter-type="tag"
+                            data-filter-value={theme.toLowerCase()}
+                        >
+                            {theme}
+                        </a>
+                    ))}
+                </div>
+            )}
+
+            <a class="sidebar-link sidebar-link-all" href="/bookshelf">View the Bookshelf →</a>
         </nav>
     </aside>
 
@@ -116,26 +136,24 @@ const categories = [...new Set(allPosts.map(post => post.data.category).filter(B
             }
         });
 
-        const categories = document.querySelectorAll(".sidebar-category");
-        categories.forEach(category => {
-            const toggle = () => {
-                const categoryId = category.getAttribute("data-category");
-                const topics = document.getElementById(`topics-${categoryId}`);
-                const isOpen = category.classList.toggle("active");
-                topics?.classList.toggle("open");
-                category.setAttribute("aria-expanded", String(isOpen));
-            };
-            category.addEventListener("click", toggle);
-            // The category divs use role="button" for accessibility,
-            // but a div has no native keyboard activation like a real
-            // <button> does, so Enter/Space have to be wired manually.
-            category.addEventListener("keydown", (e) => {
-                if (e instanceof KeyboardEvent && (e.key === "Enter" || e.key === " ")) {
-                    e.preventDefault();
-                    toggle();
-                }
+        // Highlight whichever sidebar link matches the current
+        // /bookshelf?category=/tag= filter, so a reader who arrived via
+        // the sidebar (or a pill, or a post-page tag) can see where
+        // they are, the same way the active nav link works above.
+        const sidebarLinks = document.querySelectorAll<HTMLAnchorElement>(".sidebar-link[data-filter-type]");
+        const sidebarAllLink = document.querySelector<HTMLAnchorElement>(".sidebar-link-all");
+        if (window.location.pathname === "/bookshelf") {
+            const params = new URLSearchParams(window.location.search);
+            let anyMatch = false;
+            sidebarLinks.forEach(link => {
+                const type = link.dataset.filterType;
+                const value = link.dataset.filterValue;
+                const isMatch = type && value && params.get(type) === value;
+                if (isMatch) anyMatch = true;
+                link.classList.toggle("active", Boolean(isMatch));
             });
-        });
+            sidebarAllLink?.classList.toggle("active", !anyMatch);
+        }
     </script>
 
 </body>
