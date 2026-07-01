@@ -442,13 +442,32 @@ input:focus-visible,
     transform: translateY(-1px);
 }
 
-.category-tags,
-.theme-tags {
+.browse-tags { text-align: center; }
+
+.browse-tags h2::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.browse-tag-group { margin-bottom: var(--space-lg); }
+.browse-tag-group:last-child { margin-bottom: 0; }
+
+.browse-tag-label {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+.browse-tag-pills {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--space-sm);
-    padding: var(--space-md) 0;
 }
 
 /* ========================
@@ -457,8 +476,7 @@ input:focus-visible,
 
 .featured-posts,
 .recent-posts,
-.category-tags,
-.theme-tags,
+.browse-tags,
 .author-introduction {
     position: relative;
     padding: var(--space-xl) 0;
@@ -466,8 +484,7 @@ input:focus-visible,
 
 .featured-posts::after,
 .recent-posts::after,
-.category-tags::after,
-.theme-tags::after,
+.browse-tags::after,
 .author-introduction::after {
     content: "";
     position: absolute;
@@ -478,8 +495,7 @@ input:focus-visible,
 
 .featured-posts::before,
 .recent-posts::before,
-.category-tags::before,
-.theme-tags::before,
+.browse-tags::before,
 .author-introduction::before {
     content: "";
     position: absolute;
@@ -493,6 +509,7 @@ input:focus-visible,
 
 .featured-posts h2,
 .recent-posts h2,
+.browse-tags h2,
 .author-introduction h2 {
     font-family: var(--font-heading);
     font-style: italic;
@@ -954,7 +971,7 @@ input:focus-visible,
 
 .author-card {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: var(--space-lg);
     padding: var(--space-lg);
@@ -971,6 +988,24 @@ input:focus-visible,
     border: 2px solid var(--color-accent);
 }
 
+.author-image-placeholder {
+    width: 84px; height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--color-surface-alt), var(--color-surface));
+    border: 2px solid var(--color-accent);
+}
+
+.author-image-placeholder span {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.4rem;
+    color: var(--color-accent);
+}
+
 .author-card-content h3 {
     font-size: 1.15rem;
     margin-bottom: var(--space-xs);
@@ -979,6 +1014,36 @@ input:focus-visible,
 .author-card-content p {
     font-size: 0.92rem;
     color: var(--color-text-secondary);
+}
+
+.author-card-button {
+    flex-shrink: 0;
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    color: var(--color-accent);
+    transition: all 0.25s var(--ease);
+}
+
+.author-card-button:hover {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    box-shadow: 0 8px 22px -8px rgba(138, 90, 46, 0.5);
+}
+
+@media (max-width: 600px) {
+    .author-card {
+        grid-template-columns: auto 1fr;
+    }
+    .author-card-button {
+        grid-column: 1 / -1;
+        text-align: center;
+    }
 }
 
 /* ========================
@@ -1089,6 +1154,7 @@ input:focus-visible,
     flex-direction: column;
     gap: var(--space-lg);
     padding-top: var(--space-sm);
+    text-align: justify;
 }
 
 .author-introduction h2 {
@@ -2303,8 +2369,6 @@ footer {
     .author-profile-image img { width: 100%; height: 260px; }
 
     .author-photo-placeholder { height: 260px; }
-
-    .category-tags, .theme-tags { justify-content: center; }
 
     footer .footer-links { flex-direction: column; gap: var(--space-md); }
 

@@ -50,15 +50,24 @@ const themes = [...new Set(allPosts.flatMap(post => post.data.tags ?? []))].sort
 	</section>
 
 
-	<section class="category-tags">
-		{categories.map(category => (
-			<Tag label={category} href={`/bookshelf?category=${encodeURIComponent(category.toLowerCase())}`} />
-		))}
-	</section>
-	<section class="theme-tags">
-		{themes.map(theme => (
-			<Tag label={theme} href={`/bookshelf?tag=${encodeURIComponent(theme.toLowerCase())}`} />
-		))}
+	<section class="browse-tags">
+		<h2>Browse by</h2>
+		<div class="browse-tag-group">
+			<span class="browse-tag-label">Category</span>
+			<div class="browse-tag-pills">
+				{categories.map(category => (
+					<Tag label={category} href={`/bookshelf?category=${encodeURIComponent(category.toLowerCase())}`} />
+				))}
+			</div>
+		</div>
+		<div class="browse-tag-group">
+			<span class="browse-tag-label">Theme</span>
+			<div class="browse-tag-pills">
+				{themes.map(theme => (
+					<Tag label={theme} href={`/bookshelf?tag=${encodeURIComponent(theme.toLowerCase())}`} />
+				))}
+			</div>
+		</div>
 	</section>
 
 	<!-- Previously the only route to /newsletter was a small footer
@@ -83,7 +92,7 @@ const themes = [...new Set(allPosts.flatMap(post => post.data.tags ?? []))].sort
 
 			<div class="author-card-content">
 				<h3>simplytriangle</h3>
-				<p>Placeholder — a short welcome. I write short stories, poetry, and folklore-driven analysis, most of it circling back to myths I grew up hearing.</p>
+				<p>Good day, folks. I'm simplytriangle, the author of Coffee Break. Feel free to check the bookshelf, and have a great Coffee Break.</p>
 			</div>
 
 			<a href="/about" class="author-card-button">About Me →</a>
@@ -107,10 +116,4 @@ const themes = [...new Set(allPosts.flatMap(post => post.data.tags ?? []))].sort
 			))}
 		</div>
 	</section>
-	
-<!--Header: display flex, controls Brand + Nav children
-	container: grid for main layout
-	featured-posts: grid for even spacing
-	theme-tags: flex so pills wrap on overflow
--->
 </BaseLayout>

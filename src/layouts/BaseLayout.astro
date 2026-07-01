@@ -4,7 +4,7 @@ import Footer from "../components/Footer.astro";
 import "../styles/global.css";
 import { getCollection } from "astro:content";
 
-const { title, fullWidth = false } = Astro.props;
+const { title, fullWidth = false, description, image, date } = Astro.props;
 
 const allPosts = await getCollection("posts");
 
@@ -24,6 +24,25 @@ const themes = [...new Set(allPosts.flatMap(post => post.data.tags ?? []))].sort
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{title} | Coffee Break</title>
+
+    <!-- SEO -->
+    <meta name="description" content={description ?? "A literary archive of Filipino folklore, mythology, poetry, and short stories."} />
+    <link rel="canonical" href={Astro.url.href} />
+
+    <!-- Open Graph (Facebook + Pinterest previews) -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={`${title} | Coffee Break`} />
+    <meta property="og:description" content={description ?? "A literary archive of Filipino folklore, mythology, poetry, and short stories."} />
+    <meta property="og:url" content={Astro.url.href} />
+    {image && <meta property="og:image" content={new URL(image, Astro.site).href} />}
+    {date && <meta property="article:published_time" content={new Date(date).toISOString()} />}
+
+    <!-- Twitter/X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | Coffee Break`} />
+    <meta name="twitter:description" content={description ?? "A literary archive of Filipino folklore, mythology, poetry, and short stories."} />
+    {image && <meta name="twitter:image" content={new URL(image, Astro.site).href} />}
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>

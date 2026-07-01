@@ -1,12 +1,12 @@
 ---
 title: "The Moon : Dancing Solitude"
 description: "A short poem about the moon that dance alone in the sky."
-image: "/images/The Moon.jpg"
+image: "/images/The-Moon.jpg"
 date: 2026-07-01
 featured: false
 tags: ["Astronomy"]
 category: "Poetry"
-audio: "/audio/sun-and-moon.mp3"
+layout: "../layouts/BaseLayout.astro"
 ---
 # Coffee Blend Recipe
 

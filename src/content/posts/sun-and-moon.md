@@ -6,7 +6,7 @@ date: 2026-07-01
 featured: false
 tags: ["Mythology","Folklore"]
 category: "Analyses"
-audio: "/audio/sun-and-moon.mp3"
+layout: "../layouts/BaseLayout.astro"
 ---
 
 ## Introduction

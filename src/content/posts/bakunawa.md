@@ -6,7 +6,7 @@ date: 2026-07-01
 featured: true
 tags: ["Mythology","Folklore"]
 category: "Short Stories"
-audio: "/audio/bakunawa.mp3"
+layout: "../layouts/BaseLayout.astro"
 ---
 
 The blustering wind doesn’t mellow the hardened barks of trees. Mud darkening upon the somber soil, while the verdant grass remains limp.

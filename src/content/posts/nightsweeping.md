@@ -6,7 +6,7 @@ date: 2026-07-01
 featured: false
 tags: ["Mythology","Folklore"]
 category: "Analyses"
-audio: "/audio/sun-and-moon.mp3"
+layout: "../layouts/BaseLayout.astro"
 ---
 ## Introduction
 Superstitions are something that I’ve heard a lot from the elders of my family. Now that I’m older, I want to investigate the origin of why and how superstitions came to be. For now, let’s focus on a common superstition—never sweep at night unless you want to experience bad luck.
