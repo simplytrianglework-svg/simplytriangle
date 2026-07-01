@@ -1,10 +1,10 @@
 ---
-title: "Bakunawa Yearns for the Moon"
+title: "Bakunawa Yearns for the Moon : A Folklore Retelling"
 description: "A short story about the moon-eating serpent."
 image: "/images/bakunawa.jpg"
-date: 2026-06-29
+date: 2026-07-01
 featured: true
-tags: ["Mythology"]
+tags: ["Mythology","Folklore"]
 category: "Short Stories"
 audio: "/audio/bakunawa.mp3"
 ---
